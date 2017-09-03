@@ -37,16 +37,16 @@ def MakeLocal(pose):
 	fasta.write(sequence)
 	fasta.close()
 	#Generate PSIPRED prediction file
-	psipred = pyrosetta.rosetta.core.io.external.PsiPredInterface(' ')
-	psipred.run_psipred(pose , 'blueprint')
+	psipred = pyrosetta.rosetta.core.io.external.PsiPredInterface(' ')# <------- PROBLEM
+	psipred.run_psipred(pose , 'blueprint')# <------- PROBLEM
 	os.remove('blueprint')
 	#Generate fragment files
-#	for frag in [3 , 9]:
-#		init('-in::file::fasta structure.fasta -in::file::s structure.pdb -frags::frag_sizes ' + str(frag) + ' -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
-#		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
-#		fregment.parse_command_line()
-#		fregment.read_vall('vall.jul19.2011.gz')
-#		fregment.bounded_protocol()
-#		fregment.save_fragments()
+	for frag in [3 , 9]:
+		init('-in::file::fasta structure.fasta -in::file::s structure.pdb -frags::frag_sizes ' + str(frag) + ' -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
+		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
+		fregment.parse_command_line()
+		fregment.read_vall('vall.jul19.2011.gz')
+		fregment.bounded_protocol()
+		fregment.save_fragments()
 #--------------------------------------------------
 MakeLocal(pose)
