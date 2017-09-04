@@ -13,12 +13,11 @@ Generate Fragment Picking and PSIPRED secondary structure prediction.
 This script preforms fragment picking and PSIPRED secondary structure prediction to generate the files required for an Abinitio folding simulation (like the [Robetta](http://www.robetta.org/) server but locally).
 
 ## How To Use:
-1. Make sure the vall.jul19.2011.gz is in the local directory (or point to its path from within the script - line 48)
-2. Use the following command to run the script:
+1. Use the following command to run the script:
 
-`python3 Frags.py FILENAME.pdb`
+`python3 Frags.py FILENAME.pdb PATH_TO_VALL_DATABASE`
 
-3. Output files will be:
+2. Output files will be:
 * FILENAME.fasta
 * frags.200.3mers
 * frags.200.9mers
