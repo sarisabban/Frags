@@ -6,6 +6,7 @@ from pyrosetta.toolbox import *
 init()
 
 pose = pose_from_pdb(sys.argv[1])
+Vall = sys.argv[2]
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
@@ -45,7 +46,7 @@ def MakeLocal(pose):
 		init('-in::file::fasta structure.fasta -in::file::s structure.pdb -frags::frag_sizes ' + str(frag) + ' -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
 		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
 		fregment.parse_command_line()
-		fregment.read_vall('vall.jul19.2011.gz')
+		fregment.read_vall(Vall)
 		fregment.bounded_protocol()
 		fregment.save_fragments()
 #--------------------------------------------------
