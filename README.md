@@ -23,4 +23,4 @@ This script preforms fragment picking and PSIPRED secondary structure prediction
 * frags.200.9mers
 
 Currently the script does not generate the PSIPRED file yet (still in development)
-* prediction.psipred.ss2
+* pre.psipred.ss2
