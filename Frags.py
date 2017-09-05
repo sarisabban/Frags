@@ -1,5 +1,33 @@
 #!/usr/bin/python3
 
+'''
+sudo apt install ncbi-blast+
+wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz
+tar xzvf psipred.4.01.tar.gz
+rm psipred.4.01.tar.gz
+cd psipred/src
+in ./BLAST+/runpsipredplus change line 17 to (set ncbidir = /usr/bin/psiblast)
+make
+make install
+cd ..
+wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
+gunzip -v uniref90.fasta.gz
+
+
+wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz
+tar xzvf pfilt1.5.tar.gz
+rm pfilt1.5.tar.gz
+cd pfilt
+cc -O pfilt.c -lm -o pfilt
+cd ..
+
+
+pfilt/pfilt uniref90.fasta > uniref90filt						#ERROR HERE:	pfilt not found. Cannot find where the pfilt program is and cannot find from where to install it from
+formatdb -t uniref90filt -i uniref90filt						#ERROR HERE:	formatdb not found. Cannot find where the formatdb program is and cannot find from where to install it from
+makeblastdb -dbtype prot -in uniref90filt -out uniref90filt				#OK:		Not sure what this does but it works fine
+./BLAST+/runpsipredplus example/example.fasta						#ERROR HERE:	/usr/local/bin/psiblast: Command not found. FATAL: Error whilst running blastpgp - script terminated!
+'''
+
 import Bio.PDB , sys
 from pyrosetta import *
 from pyrosetta.toolbox import *
@@ -19,7 +47,8 @@ def MakeLocal(pose):
 	fasta.close()
 	#Generate PSIPRED prediction file (http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/)
 #	os.system('')
-	#Generate Checkpoint file (ftp://ftp.ncbi.nih.gov/blast/executables/blast+/LATEST/)
+#	os.rename('' , 'pre.psipred.ss2')
+	#Generate Checkpoint file
 #	os.system('')
 	#Generate fragment files
 	for frag in [3 , 9]:
