@@ -1,33 +1,5 @@
 #!/usr/bin/python3
 
-'''
-sudo apt install ncbi-blast+
-wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz
-tar xzvf psipred.4.01.tar.gz
-rm psipred.4.01.tar.gz
-cd psipred/src
-in ./BLAST+/runpsipredplus change line 17 to (set ncbidir = /usr/bin/psiblast)
-make
-make install
-cd ..
-wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
-gunzip -v uniref90.fasta.gz
-
-
-wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz
-tar xzvf pfilt1.5.tar.gz
-rm pfilt1.5.tar.gz
-cd pfilt
-cc -O pfilt.c -lm -o pfilt
-cd ..
-
-
-pfilt/pfilt uniref90.fasta > uniref90filt						#ERROR HERE:	pfilt not found. Cannot find where the pfilt program is and cannot find from where to install it from
-formatdb -t uniref90filt -i uniref90filt						#ERROR HERE:	formatdb not found. Cannot find where the formatdb program is and cannot find from where to install it from
-makeblastdb -dbtype prot -in uniref90filt -out uniref90filt				#OK:		Not sure what this does but it works fine
-./BLAST+/runpsipredplus example/example.fasta						#ERROR HERE:	/usr/local/bin/psiblast: Command not found. FATAL: Error whilst running blastpgp - script terminated!
-'''
-
 import Bio.PDB , sys
 from pyrosetta import *
 from pyrosetta.toolbox import *
@@ -35,6 +7,30 @@ init()
 
 pose = pose_from_pdb(sys.argv[1])
 Vall = sys.argv[2]
+
+def Setup():
+	os.system('''
+sudo apt install ncbi-blast+
+wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz
+tar xzvf psipred.4.01.tar.gz
+rm psipred.4.01.tar.gz
+cd psipred/src
+make
+make install
+sed -i 's/set ncbidir = \/usr\/local\/bin/set ncbidir = \/usr\/bin/' runpsipredplus
+##### CHANGE the set execdir = /home/acresearch/Desktop/psipred/bin and set datadir = /home/acresearch/Desktop/psipred/data
+cd ..
+wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
+gunzip -v uniref90.fasta.gz
+wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz
+tar xzvf pfilt1.5.tar.gz
+rm pfilt1.5.tar.gz
+cd pfilt
+cc -O pfilt.c -lm -o pfilt
+cd ..
+pfilt/pfilt uniref90.fasta > uniref90filt
+makeblastdb -dbtype 'prot' -in uniref90filt -out uniref90filt
+''')
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
@@ -47,7 +43,7 @@ def MakeLocal(pose):
 	fasta.close()
 	#Generate PSIPRED prediction file (http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/)
 #	os.system('')
-#	os.rename('' , 'pre.psipred.ss2')
+#	os.rename('.ss2' , 'pre.psipred.ss2')
 	#Generate Checkpoint file
 #	os.system('')
 	#Generate fragment files
@@ -59,4 +55,5 @@ def MakeLocal(pose):
 		fregment.bounded_protocol()
 		fregment.save_fragments()
 #--------------------------------------------------
+#Setup()
 MakeLocal(pose)
