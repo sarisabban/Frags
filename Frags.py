@@ -36,7 +36,7 @@ def Setup():
 	os.system('wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz')
 	os.system('gunzip -v uniref90.fasta.gz')
 	os.system('pfilt/pfilt uniref90.fasta > uniref90filt')
-	os.system('makeblastdb -dbtype 'prot' -in uniref90filt -out uniref90filt')
+	os.system("makeblastdb -dbtype 'prot' -in uniref90filt -out uniref90filt")
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
