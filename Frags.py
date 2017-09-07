@@ -38,7 +38,7 @@ def Setup():
 	os.system('wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz')
 	os.system('gunzip -v uniref90.fasta.gz')
 	os.system('pfilt/pfilt uniref90.fasta > uniref90filt')
-	os.system("makeblastdb -in uniref90filt -dbtype 'prot' -out uniref90filted")
+	os.system("makeblastdb -in uniref90filt -dbtype prot -input_type fasta -out uniref90filt -hash_index")
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
@@ -63,21 +63,23 @@ def MakeLocal(pose):
 	fasta.close()
 	#Generate PSIPRED prediction file
 	os.system(psipredEX + 'runpsipredplus ' + filename[0] + '.fasta')
-#	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
-#	os.remove(filename[0] + '.horiz')
+	'''
+	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
+	os.remove(filename[0] + '.horiz')
 	#Generate Checkpoint file
 #	-in::file::checkpoint check.checkpoint
 #	os.system('' + filename[0] + '.fasta')
 #	os.rename(filename[0] + '.checkpoint' , 'check.checkpoint')
 	#Generate fragment files
-#	for frag in [3 , 9]:
-#		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
-#		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
-#		fregment.parse_command_line()
-#		fregment.read_vall(Vall + 'vall.jul19.2011.gz')
-#		fregment.bounded_protocol()
-#		fregment.save_fragments()
+	for frag in [3 , 9]:
+		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
+		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
+		fregment.parse_command_line()
+		fregment.read_vall(Vall + 'vall.jul19.2011.gz')
+		fregment.bounded_protocol()
+		fregment.save_fragments()
 #	os.remove('check.checkpoint')
+	'''
 #-----------------------------------------------------------------------------------------------------
 #Setup()
 MakeLocal(pose)
