@@ -10,7 +10,7 @@ Generate Fragment Picking and PSIPRED secondary structure prediction.
 3. The vall.jul19.2011.gz database is required to successfully run this script, the database can be found in the C++ [Rosetta](https://www.rosettacommons.org) software suite at path `{ROSETTA}/tools/fragment_tools/`, unfortunately it is currently not provided with PyRosetta therefore Rosetta needs to be downloaded separately,then uncompressed, to get the database. If you are only interested in getting the database, no need to compile Rosetta if you are not going to use it.
 
 ## Description:
-This script preforms fragment picking and PSIPRED secondary structure prediction to generate the files required for an Abinitio folding simulation (like the [Robetta](http://www.robetta.org/) server but locally).
+This script preforms fragment picking and PSIPRED secondary structure prediction to generate the files required for an Abinitio folding simulation (like the [Robetta](http://www.robetta.org/) server but locally). If you have any comments or problems with the script feel free to email me (sari.sabban@gmail.com).
 
 ## How To Use:
 1. Use the following command to run the script (approximately 1 hour to complete):
