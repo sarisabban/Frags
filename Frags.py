@@ -5,35 +5,38 @@ from pyrosetta import *
 from pyrosetta.toolbox import *
 init()
 
-pose = pose_from_pdb(sys.argv[1])
-Vall = sys.argv[2]
+pose = pose_from_pdb('structure.pdb')
+Vall = '/home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/vall.jul19.2011.gz'
 
 def Setup():
-	os.system('''
-sudo apt install ncbi-blast+
-wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz
-tar xzvf psipred.4.01.tar.gz
-rm psipred.4.01.tar.gz
-cd psipred/src
-make
-make install
-
-#	which blastp
-sed -i 's/set ncbidir = \/usr\/local\/bin/set ncbidir = \/usr\/bin/' runpsipredplus
-##### CHANGE the set execdir = /home/acresearch/Desktop/psipred/bin and set datadir = /home/acresearch/Desktop/psipred/data
-
-cd ..
-wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
-gunzip -v uniref90.fasta.gz
-wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz
-tar xzvf pfilt1.5.tar.gz
-rm pfilt1.5.tar.gz
-cd pfilt
-cc -O pfilt.c -lm -o pfilt
-cd ..
-pfilt/pfilt uniref90.fasta > uniref90filt
-makeblastdb -dbtype 'prot' -in uniref90filt -out uniref90filt
-''')
+	home = os.getcwd()
+	os.system('sudo apt install ncbi-blast+')
+	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz')
+	os.system('tar xzvf psipred.4.01.tar.gz')
+	os.system('rm psipred.4.01.tar.gz')
+	os.chdir('psipred/src')
+	os.system('make')
+	os.system('make install')
+	os.chdir(home)
+	os.chdir('psipred/BLAST+')
+	result = []
+	for root , dirs , files in os.walk('/'):
+		if 'blastp' in files:
+			result.append(os.path.join(root))
+	directory = (result[0] + '/')
+	os.system("sed -i 's#/usr/local/bin#'" + directory + "# runpsipredplus")
+	os.system("sed -i 's#set execdir = ../bin#set execdir = " + home + "/psipred/bin#' runpsipredplus")
+	os.system("sed -i 's#set datadir = ../data#set datadir = " + home + "/psipred/data#' runpsipredplus")
+	os.chdir(home)
+	os.chdir('psipred')
+	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz')
+	os.system('tar xzvf pfilt1.5.tar.gz')
+	os.system('rm pfilt1.5.tar.gz')
+	os.system('cc -O pfilt/pfilt.c -lm -o pfilt/pfilt')
+	os.system('wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz')
+	os.system('gunzip -v uniref90.fasta.gz')
+	os.system('pfilt/pfilt uniref90.fasta > uniref90filt')
+	os.system('makeblastdb -dbtype 'prot' -in uniref90filt -out uniref90filt')
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
@@ -59,5 +62,5 @@ def MakeLocal(pose):
 		fregment.bounded_protocol()
 		fregment.save_fragments()
 #--------------------------------------------------
-#Setup()
-MakeLocal(pose)
+Setup()
+#MakeLocal(pose)
