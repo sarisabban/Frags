@@ -17,8 +17,11 @@ rm psipred.4.01.tar.gz
 cd psipred/src
 make
 make install
+
+#	which blastp
 sed -i 's/set ncbidir = \/usr\/local\/bin/set ncbidir = \/usr\/bin/' runpsipredplus
 ##### CHANGE the set execdir = /home/acresearch/Desktop/psipred/bin and set datadir = /home/acresearch/Desktop/psipred/data
+
 cd ..
 wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz
 gunzip -v uniref90.fasta.gz
@@ -41,14 +44,15 @@ def MakeLocal(pose):
 	fasta = open(filename[0] + '.fasta' , 'w')
 	fasta.write(sequence)
 	fasta.close()
-	#Generate PSIPRED prediction file (http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/)
-#	os.system('')
+	#Generate PSIPRED prediction file
+#	os.system('./BLAST+/runpsipredplus example/example.fasta')
 #	os.rename('.ss2' , 'pre.psipred.ss2')
 	#Generate Checkpoint file
+#	-in::file::checkpoint .checkpoint
 #	os.system('')
 	#Generate fragment files
 	for frag in [3 , 9]:
-		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
+		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
 		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
 		fregment.parse_command_line()
 		fregment.read_vall(Vall)
