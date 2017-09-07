@@ -3,7 +3,7 @@ Generate Fragment Picking and PSIPRED secondary structure prediction.
 
 ## Requirements:
 1. Make sure you install [PyRosetta](http://www.pyrosetta.org) as the website describes.
-2. Use the following command (in GNU/Linux) to install all necessary programs, python libraries, and databases for this script to run successfully (approximately 3 hours to complete):
+2. Use the following command (in GNU/Linux) to install all necessary programs, python libraries, and databases for this script to run successfully (approximately 6 hours to complete):
 
 `python3 Frags.py setup`
 
