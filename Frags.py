@@ -5,10 +5,10 @@ from pyrosetta import *
 from pyrosetta.toolbox import *
 init()
 
-pose = pose_from_pdb('structure.pdb')
-Vall = '/home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/vall.jul19.2011.gz'
-
+pose = pose_from_pdb(sys.argv[1])
+#-----------------------------------------------------------------------------------------------------
 def Setup():
+	''' Sets up and installs are the required programs and databases for preforming BLAST+ and PSIPRED calculations '''
 	home = os.getcwd()
 	os.system('sudo apt install ncbi-blast+')
 	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz')
@@ -41,6 +41,18 @@ def Setup():
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
 	''' Generates the 3-mer file, the 9-mer file, and the PsiPred file '''
+	#Find the Vall Database
+	result = []
+	for root , dirs , files in os.walk('/'):
+		if 'vall.jul19.2011.gz' in files:
+			result.append(os.path.join(root))
+	Vall = (result[0] + '/')
+	#Find the runpsipredplus Executable
+	result = []
+	for root , dirs , files in os.walk('/'):
+		if 'runpsipredplus' in files:
+			result.append(os.path.join(root))
+	psipredEX = (result[0] + '/')
 	#Generate FASTA file
 	sequence = pose.sequence()
 	filename = sys.argv[1].split('.')
@@ -48,8 +60,9 @@ def MakeLocal(pose):
 	fasta.write(sequence)
 	fasta.close()
 	#Generate PSIPRED prediction file
-#	os.system('./BLAST+/runpsipredplus example/example.fasta')
-#	os.rename('.ss2' , 'pre.psipred.ss2')
+	os.system(psipredEX + 'runpsipredplus ' + filename[0] + '.fasta')
+	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
+	os.remove(filename[0] + '.horiz')
 	#Generate Checkpoint file
 #	-in::file::checkpoint .checkpoint
 #	os.system('')
@@ -58,9 +71,9 @@ def MakeLocal(pose):
 		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
 		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
 		fregment.parse_command_line()
-		fregment.read_vall(Vall)
+		fregment.read_vall(Vall + 'vall.jul19.2011.gz')
 		fregment.bounded_protocol()
 		fregment.save_fragments()
-#--------------------------------------------------
+#-----------------------------------------------------------------------------------------------------
 Setup()
 #MakeLocal(pose)
