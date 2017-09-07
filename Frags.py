@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+#Authored by Sari Sabban on 7-September-2017 (sari.sabban@gmail.com).
 
 import Bio.PDB , sys
 from pyrosetta import *
@@ -64,16 +65,17 @@ def MakeLocal(pose):
 	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
 	os.remove(filename[0] + '.horiz')
 	#Generate Checkpoint file
-#	-in::file::checkpoint .checkpoint
-#	os.system('')
+#	os.system('' + filename[0] + '.fasta')
+	os.rename(filename[0] + '.checkpoint' , 'check.checkpoint')
 	#Generate fragment files
 	for frag in [3 , 9]:
-		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
+		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -in::file::checkpoint check.checkpoint -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
 		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
 		fregment.parse_command_line()
 		fregment.read_vall(Vall + 'vall.jul19.2011.gz')
 		fregment.bounded_protocol()
 		fregment.save_fragments()
+	os.remove('check.checkpoint')
 #-----------------------------------------------------------------------------------------------------
 Setup()
 #MakeLocal(pose)
