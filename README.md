@@ -13,7 +13,7 @@ Generate Fragment Picking and PSIPRED secondary structure prediction.
 This script preforms fragment picking and PSIPRED secondary structure prediction to generate the files required for an Abinitio folding simulation (like the [Robetta](http://www.robetta.org/) server but locally).
 
 ## How To Use:
-1. Use the following command to run the script:
+1. Use the following command to run the script (approximately 1 hour to complete):
 
 `python3 Frags.py FILENAME.pdb`
 
