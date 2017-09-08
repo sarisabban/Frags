@@ -10,8 +10,10 @@ pose = pose_from_pdb(sys.argv[1])
 #-----------------------------------------------------------------------------------------------------
 def Setup():
 	''' Sets up and installs are the required programs and databases for preforming BLAST+ and PSIPRED calculations '''
+	#Install BLAST+
 	home = os.getcwd()
 	os.system('sudo apt install ncbi-blast+')
+	#Download and compile PSIPRED as well as identify important paths
 	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/psipred/psipred.4.01.tar.gz')
 	os.system('tar xzvf psipred.4.01.tar.gz')
 	os.system('rm psipred.4.01.tar.gz')
@@ -31,13 +33,16 @@ def Setup():
 	os.system("sed -i 's#set dbname = uniref90filt#" + home + "/psipred/uniref90filt#' runpsipredplus")
 	os.chdir(home)
 	os.chdir('psipred')
+	#Download and compile Pfilt
 	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz')
 	os.system('tar xzvf pfilt1.5.tar.gz')
 	os.system('rm pfilt1.5.tar.gz')
 	os.system('cc -O pfilt/pfilt.c -lm -o pfilt/pfilt')
+	#Download and prepare the Uniref90 database
 	os.system('wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz')
 	os.system('gunzip -v uniref90.fasta.gz')
 	os.system('pfilt/pfilt uniref90.fasta > uniref90filt')
+	os.remove('uniref90.fasta')
 	os.system("makeblastdb -in uniref90filt -dbtype prot -input_type fasta -out uniref90filt -hash_index")
 
 def MakeLocal(pose):
