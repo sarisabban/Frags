@@ -30,20 +30,13 @@ def Setup():
 	os.system("sed -i 's#/usr/local/bin#'" + directory + "# runpsipredplus")
 	os.system("sed -i 's#set execdir = ../bin#set execdir = " + home + "/psipred/bin#' runpsipredplus")
 	os.system("sed -i 's#set datadir = ../data#set datadir = " + home + "/psipred/data#' runpsipredplus")
-	os.system("sed -i 's#set dbname = uniref90filt#" + home + "/psipred/uniref90filt#' runpsipredplus")
+	os.system("sed -i 's#set dbname = uniref90filt#" + home + "/psipred/uniref90.fasta#' runpsipredplus")
 	os.chdir(home)
 	os.chdir('psipred')
-	#Download and compile Pfilt
-	os.system('wget http://bioinfadmin.cs.ucl.ac.uk/downloads/pfilt/pfilt1.5.tar.gz')
-	os.system('tar xzvf pfilt1.5.tar.gz')
-	os.system('rm pfilt1.5.tar.gz')
-	os.system('cc -O pfilt/pfilt.c -lm -o pfilt/pfilt')
 	#Download and prepare the Uniref90 database
 	os.system('wget ftp://ftp.uniprot.org/pub/databases/uniprot/uniref/uniref90/uniref90.fasta.gz')
 	os.system('gunzip -v uniref90.fasta.gz')
-	os.system('pfilt/pfilt uniref90.fasta > uniref90filt')
-	os.remove('uniref90.fasta')
-	os.system("makeblastdb -in uniref90filt -dbtype prot -input_type fasta -out uniref90filt -hash_index")
+	os.system("makeblastdb -in uniref90.fasta -dbtype prot -input_type fasta -out uniref90.fasta")
 
 def MakeLocal(pose):
 	''' Preforms fragment picking and secondary structure prediction locally '''
@@ -60,6 +53,12 @@ def MakeLocal(pose):
 		if 'runpsipredplus' in files:
 			result.append(os.path.join(root))
 	psipredEX = (result[0] + '/')
+	#Find the uniref90 Database
+	result = []
+	for root , dirs , files in os.walk('/'):
+		if 'uniref90.fasta' in files:
+			result.append(os.path.join(root))
+	uniref90 = (result[0] + '/')
 	#Generate FASTA file
 	sequence = pose.sequence()
 	filename = sys.argv[1].split('.')
@@ -68,23 +67,20 @@ def MakeLocal(pose):
 	fasta.close()
 	#Generate PSIPRED prediction file
 	os.system(psipredEX + 'runpsipredplus ' + filename[0] + '.fasta')
-	'''
 	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
 	os.remove(filename[0] + '.horiz')
 	#Generate Checkpoint file
-#	-in::file::checkpoint check.checkpoint
-#	os.system('' + filename[0] + '.fasta')
-#	os.rename(filename[0] + '.checkpoint' , 'check.checkpoint')
+	os.system('psiblast -db ' + uniref90 + 'uniref90.fasta -query ' + filename[0] + '.fasta')
+	os.rename(filename[0] + '.checkpoint' , 'check.checkpoint')
 	#Generate fragment files
 	for frag in [3 , 9]:
-		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
+		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -in::file::checkpoint check.checkpoint -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
 		fregment = pyrosetta.rosetta.protocols.frag_picker.FragmentPicker()
 		fregment.parse_command_line()
 		fregment.read_vall(Vall + 'vall.jul19.2011.gz')
 		fregment.bounded_protocol()
 		fregment.save_fragments()
-#	os.remove('check.checkpoint')
-	'''
+	os.remove('check.checkpoint')
 #-----------------------------------------------------------------------------------------------------
 #Setup()
 MakeLocal(pose)
