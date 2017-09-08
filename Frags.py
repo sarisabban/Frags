@@ -84,3 +84,9 @@ def MakeLocal(pose):
 #-----------------------------------------------------------------------------------------------------
 #Setup()
 MakeLocal(pose)
+
+
+'''
+wget -O /home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/databases/nr.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz
+/home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/make_fragments.pl ./structure.fasta
+'''
