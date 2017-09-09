@@ -6,7 +6,6 @@ from pyrosetta import *
 from pyrosetta.toolbox import *
 init()
 
-pose = pose_from_pdb(sys.argv[1])
 #-----------------------------------------------------------------------------------------------------
 def Setup():
 	''' Sets up and installs are the required programs and databases for preforming BLAST+ and PSIPRED calculations '''
@@ -70,8 +69,7 @@ def MakeLocal(pose):
 	os.rename(filename[0] + '.ss2' , 'pre.psipred.ss2')
 	os.remove(filename[0] + '.horiz')
 	#Generate Checkpoint file
-	os.system('psiblast -db ' + uniref90 + 'uniref90.fasta -query ' + filename[0] + '.fasta')
-	os.rename(filename[0] + '.checkpoint' , 'check.checkpoint')
+	os.system('blastpgp -b 0 -j 3 -h 0.001 -d ' + uniref90 + 'uniref90.fasta -i ' + filename[0] + '.fasta -C check.checkpoint')
 	#Generate fragment files
 	for frag in [3 , 9]:
 		init('-in::file::fasta ' + filename[0] + '.fasta' + ' -in::file::s ' + sys.argv[1] + ' -frags::frag_sizes ' + str(frag) + ' -frags::ss_pred pre.psipred.ss2 predA -in::file::checkpoint check.checkpoint -frags::n_candidates 1000 -frags:write_ca_coordinates -frags::n_frags 200')
@@ -82,11 +80,8 @@ def MakeLocal(pose):
 		fregment.save_fragments()
 	os.remove('check.checkpoint')
 #-----------------------------------------------------------------------------------------------------
-#Setup()
-MakeLocal(pose)
-
-
-'''
-wget -O /home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/databases/nr.gz ftp://ftp.ncbi.nlm.nih.gov/blast/db/FASTA/nr.gz
-/home/acresearch/rosetta_src_2017.08.59291_bundle/tools/fragment_tools/make_fragments.pl ./structure.fasta
-'''
+if sys.argv[1] == 'setup' or sys.argv[1] == 'Setup':
+	Setup()
+else:
+	pose = pose_from_pdb(sys.argv[1])
+	MakeLocal(pose)
